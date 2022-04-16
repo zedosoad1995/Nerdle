@@ -1,4 +1,5 @@
 import itertools
+from params import all_equal_sign_positions, all_possible_operations, all_digits
 
 def get_operation_combinations(calculation, positions, symbols):
     possible_calculations = []
@@ -29,7 +30,7 @@ def fill_digits(calculation, digits):
 
 
 def get_equal_positions(restrictions):
-    all_pos = [4, 5, 6]
+    all_pos = all_equal_sign_positions
 
     if '=' not in restrictions:
         return all_pos
@@ -44,13 +45,20 @@ def get_equal_positions(restrictions):
 
     return all_pos
 
-def filter_operations_positions(calculations, restrictions):
-    all_operations = ['*', '/', '+', '-']
+
+def is_invalid_calculation(restrictions, indices):
+    return ('does not exist' in restrictions and restrictions['does not exist'] and len(indices) > 0) or \
+                ('positions' in restrictions and not (set(restrictions['positions']) <= set(indices))) or \
+                ('not in positions' in restrictions and set(restrictions['not in positions']) & set(indices)) or \
+                ('number of instances' in restrictions and len(indices) != restrictions['number of instances'])
+
+
+def filter_operations(calculations, restrictions):
+    all_operations = all_possible_operations
 
     filtered_calculations = []
 
     for calc in calculations:
-
         is_valid = True
 
         for operation in all_operations:
@@ -58,13 +66,9 @@ def filter_operations_positions(calculations, restrictions):
                 continue
 
             op_restrictions = restrictions[operation]
-
             op_indices = [i for i, x in enumerate(list(calc)) if x == operation]
 
-            if ('does not exist' in op_restrictions and op_restrictions['does not exist'] and len(op_indices) > 0) or \
-                ('positions' in op_restrictions and not (set(op_restrictions['positions']) <= set(op_indices))) or \
-                ('not in positions' in op_restrictions and set(op_restrictions['not in positions']) & set(op_indices)) or \
-                ('number of instances' in op_restrictions and len(op_indices) != op_restrictions['number of instances']):
+            if is_invalid_calculation(op_restrictions, op_indices):
                 is_valid = False
                 break
 
@@ -76,7 +80,7 @@ def filter_operations_positions(calculations, restrictions):
     return filtered_calculations
 
 
-def get_valid_digits(all_digits, restrictions):
+def get_valid_digits(restrictions):
     valid_digits = []
 
     for digit in all_digits:
@@ -93,19 +97,15 @@ def get_valid_digits(all_digits, restrictions):
 
     return valid_digits
 
-def is_valid_digits(calculation, restrictions, all_digits):
-    for digit in all_digits:
+def is_valid_digits(calculation, restrictions, digits):
+    for digit in digits:
         if digit not in restrictions:
             continue
 
         digit_restrictions = restrictions[digit]
-
         digit_indices = [i for i, x in enumerate(list(calculation)) if x == digit]
 
-        if ('does not exist' in digit_restrictions and digit_restrictions['does not exist'] and len(digit_indices) > 0) or \
-            ('positions' in digit_restrictions and not (set(digit_restrictions['positions']) <= set(digit_indices))) or \
-            ('not in positions' in digit_restrictions and set(digit_restrictions['not in positions']) & set(digit_indices)) or \
-            ('number of instances' in digit_restrictions and len(digit_indices) != digit_restrictions['number of instances']):
+        if is_invalid_calculation(digit_restrictions, digit_indices):
             return False
 
     return True
