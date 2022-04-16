@@ -65,4 +65,53 @@ def get_possible_combinations(restrictions):
 
     return possible_combinations
 
-print(get_possible_combinations(restrictions))
+
+def convert_cmd_to_restrictions(cmd_str, restrictions={}):
+    '''
+    format example: 2r 4b +g ... =g ...
+    r-red, g-green, b-black
+    '''  
+
+    digit_cmds = cmd_str.split(' ')
+
+    for i, (digit, cmd) in enumerate(digit_cmds):
+        if digit not in restrictions:
+            restrictions[digit] = {}
+
+        if cmd == 'r':
+            if 'not in positions' in restrictions[digit]:
+                if i not in restrictions[digit]['not in positions']:
+                    restrictions[digit]['not in positions'].append(i)
+            else:
+                restrictions[digit]['not in positions'] = [i]
+        elif cmd == 'g':
+            if 'positions' in restrictions[digit]:
+                if i not in restrictions[digit]['positions']:
+                    restrictions[digit]['positions'].append(i)
+            else:
+                restrictions[digit]['positions'] = [i]
+        
+    digits = [cmd[0] for cmd in digit_cmds]   
+
+    # Run 2nd time for the black boxes
+    for digit, cmd in digit_cmds:
+        if cmd == 'b':
+            if len(restrictions[digit]) == 0:
+                restrictions[digit]['does not exist'] = True
+                continue
+
+            if 'does not exist' in restrictions[digit] and restrictions[digit]['does not exist']:
+                continue
+
+            restrictions[digit]['number of instances'] = digits.count(digit) - 1
+
+    return restrictions
+
+
+            
+
+            
+
+print(convert_cmd_to_restrictions('2r 4b 2b +g 1g', {'2': {'not in positions': [0]}, '4': {'does not exist': True}}))
+
+#print(get_possible_combinations(restrictions))
