@@ -56,11 +56,15 @@ def get_equal_positions(restrictions):
     return all_pos
 
 
-def is_invalid_calculation(restrictions, indices):
-    return ('does not exist' in restrictions and restrictions['does not exist'] and len(indices) > 0) or \
-                ('positions' in restrictions and not (set(restrictions['positions']) <= set(indices))) or \
-                ('not in positions' in restrictions and set(restrictions['not in positions']) & set(indices)) or \
-                ('number of instances' in restrictions and len(indices) != restrictions['number of instances'])
+def is_invalid_calculation(restrictions, operation, calc):
+    restriction = restrictions[operation]
+    indices = [i for i, x in enumerate(list(calc)) if x == operation]
+
+    return ('does not exist' in restriction and restriction['does not exist'] and len(indices) > 0) or \
+                ('positions' in restriction and not (set(restriction['positions']) <= set(indices))) or \
+                ('not in positions' in restriction and set(restriction['not in positions']) & set(indices)) or \
+                ('number of instances' in restriction and len(indices) != restriction['number of instances']) or \
+                ('number of instances' not in restriction and len(indices) == 0 and 'does not exist' not in restriction)
 
 
 def filter_operations(calculations, restrictions):
@@ -75,10 +79,7 @@ def filter_operations(calculations, restrictions):
             if operation not in restrictions:
                 continue
 
-            op_restrictions = restrictions[operation]
-            op_indices = [i for i, x in enumerate(list(calc)) if x == operation]
-
-            if is_invalid_calculation(op_restrictions, op_indices):
+            if is_invalid_calculation(restrictions, operation, calc):
                 is_valid = False
                 break
 
@@ -121,10 +122,7 @@ def is_valid_digits(calculation, restrictions, valid_digits):
         if digit not in restrictions:
             continue
 
-        digit_restrictions = restrictions[digit]
-        digit_indices = [i for i, x in enumerate(list(calculation)) if x == digit]
-
-        if is_invalid_calculation(digit_restrictions, digit_indices):
+        if is_invalid_calculation(restrictions, digit, calculation):
             return False
 
     return True

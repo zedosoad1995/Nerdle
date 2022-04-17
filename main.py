@@ -13,7 +13,8 @@ from get_combinations_helper import (
     has_result_valid_digits,
     has_trailing_zeros
 )
-from params import word_size, operations
+from helper import get_possible_evals, filter_zero_mult_div
+from params import word_size, operations, all_digits
 
 def get_possible_combinations(restrictions):
     possible_operation_combinations = []
@@ -52,16 +53,29 @@ def get_possible_combinations(restrictions):
 
             full_calculation = f'{calc}={result}'
 
-            valid_digits = list(set(item for sublist in valid_digits for item in sublist))
+            #valid_digits = list(set(item for sublist in valid_digits for item in sublist))
 
-            if not is_valid_digits(full_calculation, restrictions, valid_digits) or \
-                not has_result_valid_digits(str(result), restrictions) or \
+            if not is_valid_digits(full_calculation, restrictions, all_digits) or \
                 has_trailing_zeros(full_calculation):
                 continue
 
             possible_combinations.append(full_calculation)
 
     return possible_combinations
+
+
+def get_possible_combinations_from_list(prev_combinations, restrictions):
+    possible_combinations = []
+    
+    for comb in prev_combinations:
+        if not is_valid_digits(comb, restrictions, all_digits + ['*', '+', '/', '-', '=']) or \
+                has_trailing_zeros(comb):
+                continue
+
+        possible_combinations.append(comb)
+
+    return possible_combinations
+
 
 
 def convert_cmd_to_restrictions(cmd_str, restrictions={}):
@@ -108,39 +122,46 @@ def convert_cmd_to_restrictions(cmd_str, restrictions={}):
     return restrictions
 
 
-#print(convert_cmd_to_restrictions('2r 4b 2b +g 1g', {'2': {'not in positions': [0]}, '4': {'does not exist': True}}))
-
-#print(get_possible_combinations(restrictions))
-
 restrictions = {}
-possible_evals = list(itertools.product(['g', 'r', 'b'], repeat=word_size))
 
 # 3b 3b 6g /b 4b 2b =g 8b
 # 6b +b 6g -g 1r 1b =g 1b
-
-iters = 0
+cmd = 'r r r r r r r r'
+cnt = 0
 while True:
     cmd = input('Write new cmd: ')
     restrictions = convert_cmd_to_restrictions(cmd, restrictions)
     possible_combinations = get_possible_combinations(restrictions)
+    possible_combinations = filter_zero_mult_div(possible_combinations)
     print('List of possible combinations', possible_combinations, len(possible_combinations))
 
-    if iters > 0:
+    if cnt > -1:
+        possible_evals = get_possible_evals(cmd)
+        scores = []
         for comb in possible_combinations:
             print(comb)
             comb_lens = []
             for i, _eval in enumerate(possible_evals):
                 temp_cmd = functools.reduce(lambda acc, iv: acc + comb[iv[0]] + iv[1] + ' ', enumerate(_eval), '')[:-1]
                 temp_restrictions = convert_cmd_to_restrictions(temp_cmd, copy.deepcopy(restrictions))
-                num_combinations = len(get_possible_combinations(temp_restrictions))
+                out_combinations = get_possible_combinations_from_list(possible_combinations, temp_restrictions)
+                num_combinations = len(out_combinations)
                 
                 if num_combinations > 0:
                     comb_lens.append(num_combinations)
+                    print(comb, _eval, num_combinations)
 
-            total_combs = sum(comb_lens)
-            score = functools.reduce(lambda acc, val: acc - math.log2(val/total_combs), comb_lens)
+            print(comb, comb_lens)
+            score = 0
+            for val in comb_lens:
+                score = score - val/sum(comb_lens)*math.log2(val/len(possible_combinations))
+
+            #score = functools.reduce(lambda acc, val: acc - val/sum(comb_lens)*math.log2(val/len(possible_combinations)), comb_lens)
+            scores.append([score, comb])
 
             print('SCORE:', score)
 
-    iters += 1
+        scores.sort(key=lambda x: x[0], reverse=True)
+        print(scores)
 
+    cnt += 1
