@@ -18,6 +18,15 @@ def get_operation_combinations(calculation, positions, symbols):
     return possible_calculations
 
 
+def map_indices(str):
+    indices = []
+    for i, c in enumerate(str):
+        if c == '_':
+            indices.append(i)
+
+    return indices
+
+
 def fill_digits(calculation, digits):
     calc = list(calculation)
 
@@ -31,7 +40,7 @@ def fill_digits(calculation, digits):
 
 
 def get_equal_positions(restrictions):
-    all_pos = all_equal_sign_positions
+    all_pos = all_equal_sign_positions.copy()
 
     if '=' not in restrictions:
         return all_pos
@@ -55,7 +64,7 @@ def is_invalid_calculation(restrictions, indices):
 
 
 def filter_operations(calculations, restrictions):
-    all_operations = all_possible_operations
+    all_operations = all_possible_operations.copy()
 
     filtered_calculations = []
 
@@ -81,25 +90,34 @@ def filter_operations(calculations, restrictions):
     return filtered_calculations
 
 
-def get_valid_digits(restrictions):
+def get_valid_digits(restrictions, mapped_indices):
     valid_digits = []
 
-    for digit in all_digits:
-        if digit not in restrictions:
-            valid_digits.append(digit)
-            continue
+    for i, mapped_idx in enumerate(mapped_indices):
+        valid_digits.append([])
+        for digit in all_digits:
+            if digit not in restrictions:
+                valid_digits[i].append(digit)
+                continue
 
-        digit_restrictions = restrictions[digit]
+            digit_restrictions = restrictions[digit]
 
-        if 'does not exist' in digit_restrictions and digit_restrictions['does not exist']:
-            continue
+            if 'does not exist' in digit_restrictions and digit_restrictions['does not exist']:
+                continue
 
-        valid_digits.append(digit)
+            if 'not in positions' in digit_restrictions and mapped_idx in digit_restrictions['not in positions']:
+                continue
+
+            if 'positions' in digit_restrictions and mapped_idx in digit_restrictions['positions']:
+                valid_digits[i] = [digit]
+                break
+
+            valid_digits[i].append(digit)
 
     return valid_digits
 
-def is_valid_digits(calculation, restrictions, digits):
-    for digit in digits:
+def is_valid_digits(calculation, restrictions, valid_digits):
+    for digit in valid_digits:
         if digit not in restrictions:
             continue
 

@@ -1,7 +1,12 @@
+import functools
 import itertools
+import math
+import copy
 from get_combinations_helper import (
-    get_operation_combinations, 
-    fill_digits, get_equal_positions, 
+    get_operation_combinations,
+    map_indices,
+    fill_digits, 
+    get_equal_positions, 
     filter_operations, 
     get_valid_digits, 
     is_valid_digits,
@@ -9,20 +14,6 @@ from get_combinations_helper import (
     has_trailing_zeros
 )
 from params import word_size, operations
-
-restrictions = {
-    "=": {
-        'positions': [5]
-    },
-    "+": {
-        'not in positions': [1, 3],
-        'number of instances': 1,
-        'positions': [2]
-    },
-    "9": {
-        "does not exist": True,
-    },
-}
 
 def get_possible_combinations(restrictions):
     possible_operation_combinations = []
@@ -40,8 +31,9 @@ def get_possible_combinations(restrictions):
     possible_combinations = []
     for calculation_str in possible_operation_combinations:
 
-        valid_digits = get_valid_digits(restrictions)
-        digits_combinations = list(itertools.product(*([valid_digits] * calculation_str.count('_'))))
+        mapped_indices = map_indices(calculation_str)
+        valid_digits = get_valid_digits(restrictions, mapped_indices)
+        digits_combinations = list(itertools.product(*valid_digits))
         
         for digits in digits_combinations:
             calc = fill_digits(calculation_str, digits)
@@ -59,6 +51,8 @@ def get_possible_combinations(restrictions):
             result = int(result)
 
             full_calculation = f'{calc}={result}'
+
+            valid_digits = list(set(item for sublist in valid_digits for item in sublist))
 
             if not is_valid_digits(full_calculation, restrictions, valid_digits) or \
                 not has_result_valid_digits(str(result), restrictions) or \
@@ -95,7 +89,8 @@ def convert_cmd_to_restrictions(cmd_str, restrictions={}):
             else:
                 restrictions[digit]['positions'] = [i]
         
-    digits = [cmd[0] for cmd in digit_cmds]   
+    digits = [cmd[0] for cmd in digit_cmds]
+    cmd_types = [cmd[1] for cmd in digit_cmds] 
 
     # Run 2nd time for the black boxes
     for digit, cmd in digit_cmds:
@@ -107,7 +102,8 @@ def convert_cmd_to_restrictions(cmd_str, restrictions={}):
             if 'does not exist' in restrictions[digit] and restrictions[digit]['does not exist']:
                 continue
 
-            restrictions[digit]['number of instances'] = digits.count(digit) - 1
+            num_valid_instances = len([d for i, d in enumerate(digits) if d == digit and cmd_types[i] != 'b'])
+            restrictions[digit]['number of instances'] = num_valid_instances
 
     return restrictions
 
@@ -117,8 +113,34 @@ def convert_cmd_to_restrictions(cmd_str, restrictions={}):
 #print(get_possible_combinations(restrictions))
 
 restrictions = {}
+possible_evals = list(itertools.product(['g', 'r', 'b'], repeat=word_size))
 
+# 3b 3b 6g /b 4b 2b =g 8b
+# 6b +b 6g -g 1r 1b =g 1b
+
+iters = 0
 while True:
     cmd = input('Write new cmd: ')
     restrictions = convert_cmd_to_restrictions(cmd, restrictions)
-    print('List of possible combinations', get_possible_combinations(restrictions))
+    possible_combinations = get_possible_combinations(restrictions)
+    print('List of possible combinations', possible_combinations, len(possible_combinations))
+
+    if iters > 0:
+        for comb in possible_combinations:
+            print(comb)
+            comb_lens = []
+            for i, _eval in enumerate(possible_evals):
+                temp_cmd = functools.reduce(lambda acc, iv: acc + comb[iv[0]] + iv[1] + ' ', enumerate(_eval), '')[:-1]
+                temp_restrictions = convert_cmd_to_restrictions(temp_cmd, copy.deepcopy(restrictions))
+                num_combinations = len(get_possible_combinations(temp_restrictions))
+                
+                if num_combinations > 0:
+                    comb_lens.append(num_combinations)
+
+            total_combs = sum(comb_lens)
+            score = functools.reduce(lambda acc, val: acc - math.log2(val/total_combs), comb_lens)
+
+            print('SCORE:', score)
+
+    iters += 1
+
