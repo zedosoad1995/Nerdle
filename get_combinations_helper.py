@@ -1,4 +1,5 @@
 import itertools
+import re
 from params import all_equal_sign_positions, all_possible_operations, all_digits
 
 def get_operation_combinations(calculation, positions, symbols):
@@ -122,3 +123,6 @@ def has_result_valid_digits(result, restrictions):
             return False
 
     return True
+
+def has_trailing_zeros(str):
+    return any(numbers for numbers in re.split("[^0-9]", str) if len(numbers) > 1 and numbers[0] == '0')

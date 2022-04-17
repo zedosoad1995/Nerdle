@@ -5,7 +5,8 @@ from get_combinations_helper import (
     filter_operations, 
     get_valid_digits, 
     is_valid_digits,
-    has_result_valid_digits
+    has_result_valid_digits,
+    has_trailing_zeros
 )
 from params import word_size, operations
 
@@ -55,10 +56,13 @@ def get_possible_combinations(restrictions):
                 result < 0:
                 continue
 
-            full_calculation = f'{calc}={int(result)}'
+            result = int(result)
+
+            full_calculation = f'{calc}={result}'
 
             if not is_valid_digits(full_calculation, restrictions, valid_digits) or \
-                not has_result_valid_digits(str(result), restrictions):
+                not has_result_valid_digits(str(result), restrictions) or \
+                has_trailing_zeros(full_calculation):
                 continue
 
             possible_combinations.append(full_calculation)
@@ -108,10 +112,13 @@ def convert_cmd_to_restrictions(cmd_str, restrictions={}):
     return restrictions
 
 
-            
-
-            
-
-print(convert_cmd_to_restrictions('2r 4b 2b +g 1g', {'2': {'not in positions': [0]}, '4': {'does not exist': True}}))
+#print(convert_cmd_to_restrictions('2r 4b 2b +g 1g', {'2': {'not in positions': [0]}, '4': {'does not exist': True}}))
 
 #print(get_possible_combinations(restrictions))
+
+restrictions = {}
+
+while True:
+    cmd = input('Write new cmd: ')
+    restrictions = convert_cmd_to_restrictions(cmd, restrictions)
+    print('List of possible combinations', get_possible_combinations(restrictions))
