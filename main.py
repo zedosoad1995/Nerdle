@@ -2,6 +2,7 @@ import functools
 import itertools
 import math
 import copy
+import _pickle as cPickle
 from get_combinations_helper import (
     get_operation_combinations,
     map_indices,
@@ -10,13 +11,12 @@ from get_combinations_helper import (
     filter_operations, 
     get_valid_digits, 
     is_valid_digits,
-    has_result_valid_digits,
     has_trailing_zeros
 )
-from helper import get_possible_evals, filter_zero_mult_div
+from helper import get_possible_evals, filter_zero_mult_div, get_combinations_dict, delete_refs, remove_empty_lists, has_red_or_green_instance
 from params import word_size, operations, all_digits
 
-def get_possible_combinations(restrictions):
+def get_all_combinations(restrictions):
     possible_operation_combinations = []
 
     for equal_sign_pos in get_equal_positions(restrictions):
@@ -53,73 +53,42 @@ def get_possible_combinations(restrictions):
 
             full_calculation = f'{calc}={result}'
 
-            #valid_digits = list(set(item for sublist in valid_digits for item in sublist))
-
-            if not is_valid_digits(full_calculation, restrictions, all_digits) or \
-                has_trailing_zeros(full_calculation):
+            if has_trailing_zeros(full_calculation):
                 continue
 
-            possible_combinations.append(full_calculation)
+            possible_combinations.append([full_calculation])
 
     return possible_combinations
 
 
-def get_possible_combinations_from_list(prev_combinations, restrictions):
-    possible_combinations = []
-    
-    for comb in prev_combinations:
-        if not is_valid_digits(comb, restrictions, all_digits + ['*', '+', '/', '-', '=']) or \
-                has_trailing_zeros(comb):
-                continue
+def get_possible_combinations_from_list(combinations_dict, anti_combinations_dict, cmd):
+    cmd_slots = cmd.split(' ')
 
-        possible_combinations.append(comb)
-
-    return possible_combinations
-
-
-
-def convert_cmd_to_restrictions(cmd_str, restrictions={}):
-    '''
-    format example: 2r 4b +g ... =g ...
-    r-red, g-green, b-black
-    '''  
-
-    digit_cmds = cmd_str.split(' ')
-
-    for i, (digit, cmd) in enumerate(digit_cmds):
-        if digit not in restrictions:
-            restrictions[digit] = {}
-
-        if cmd == 'r':
-            if 'not in positions' in restrictions[digit]:
-                if i not in restrictions[digit]['not in positions']:
-                    restrictions[digit]['not in positions'].append(i)
-            else:
-                restrictions[digit]['not in positions'] = [i]
-        elif cmd == 'g':
-            if 'positions' in restrictions[digit]:
-                if i not in restrictions[digit]['positions']:
-                    restrictions[digit]['positions'].append(i)
-            else:
-                restrictions[digit]['positions'] = [i]
-        
-    digits = [cmd[0] for cmd in digit_cmds]
-    cmd_types = [cmd[1] for cmd in digit_cmds] 
-
-    # Run 2nd time for the black boxes
-    for digit, cmd in digit_cmds:
-        if cmd == 'b':
-            if len(restrictions[digit]) == 0:
-                restrictions[digit]['does not exist'] = True
-                continue
-
-            if 'does not exist' in restrictions[digit] and restrictions[digit]['does not exist']:
-                continue
-
-            num_valid_instances = len([d for i, d in enumerate(digits) if d == digit and cmd_types[i] != 'b'])
-            restrictions[digit]['number of instances'] = num_valid_instances
-
-    return restrictions
+    for i, cmd_slot in enumerate(cmd_slots):
+        digit, color = cmd_slot
+        if color == 'g':
+            for key, vals in combinations_dict[str(i)].items():
+                if key == digit:
+                    continue
+                delete_refs(vals)
+        elif color == 'r':
+            delete_refs(combinations_dict[str(i)][digit])
+            if digit in anti_combinations_dict:
+                delete_refs(anti_combinations_dict[digit])
+        elif color == 'b':
+            r_g = has_red_or_green_instance(cmd_slots, digit)
+            if not has_red_or_green_instance(cmd_slots, digit):
+                for vals in combinations_dict.values():
+                    if digit in vals:
+                        delete_refs(vals[digit])
+            elif 'r' in r_g:
+                delete_refs(combinations_dict[str(i)][digit])
+                if digit in anti_combinations_dict:
+                    delete_refs(anti_combinations_dict[digit])
+            elif 'g' in r_g:
+                for key, vals in combinations_dict.items():
+                    if digit in vals and digit not in cmd_slots[int(key)]:
+                        delete_refs(vals[digit])
 
 
 restrictions = {}
@@ -128,30 +97,46 @@ restrictions = {}
 # 6b +b 6g -g 1r 1b =g 1b
 cmd = 'r r r r r r r r'
 cnt = 0
+possible_combinations = get_all_combinations(restrictions)
+possible_combinations = filter_zero_mult_div(possible_combinations)
+combinations_dict, anti_combinations_dict = get_combinations_dict(possible_combinations)
 while True:
     cmd = input('Write new cmd: ')
-    restrictions = convert_cmd_to_restrictions(cmd, restrictions)
-    possible_combinations = get_possible_combinations(restrictions)
-    possible_combinations = filter_zero_mult_div(possible_combinations)
+    get_possible_combinations_from_list(combinations_dict, anti_combinations_dict, cmd)
+    remove_empty_lists(possible_combinations)
     print('List of possible combinations', possible_combinations, len(possible_combinations))
+
+    for temp_dict in combinations_dict.values():
+        for _vals in temp_dict.values():
+            remove_empty_lists(_vals)
 
     if cnt > -1:
         possible_evals = get_possible_evals(cmd)
         scores = []
         for comb in possible_combinations:
+            comb = comb[0]
             print(comb)
             comb_lens = []
             for i, _eval in enumerate(possible_evals):
                 temp_cmd = functools.reduce(lambda acc, iv: acc + comb[iv[0]] + iv[1] + ' ', enumerate(_eval), '')[:-1]
-                temp_restrictions = convert_cmd_to_restrictions(temp_cmd, copy.deepcopy(restrictions))
-                out_combinations = get_possible_combinations_from_list(possible_combinations, temp_restrictions)
-                num_combinations = len(out_combinations)
+                
+                #temp_restrictions = convert_cmd_to_restrictions(temp_cmd, copy.deepcopy(restrictions))
+                tmp = [combinations_dict, anti_combinations_dict, possible_combinations]
+                tmp1 = cPickle.loads(cPickle.dumps(tmp, -1))
+                #tmp1 = copy.deepcopy(tmp)
+                combinations_dict_cpy, anti_combinations_dict_cpy, possible_combinations_cpy = tmp1
+                get_possible_combinations_from_list(combinations_dict_cpy, anti_combinations_dict_cpy, temp_cmd)
+                #remove_empty_lists(possible_combinations_cpy)
+                cnt_ = 0
+                for ii in possible_combinations_cpy:
+                    if ii != []:
+                        cnt_ += 1
+                num_combinations = cnt_
                 
                 if num_combinations > 0:
                     comb_lens.append(num_combinations)
-                    print(comb, _eval, num_combinations)
+                    print(_eval, num_combinations)
 
-            print(comb, comb_lens)
             score = 0
             for val in comb_lens:
                 score = score - val/sum(comb_lens)*math.log2(val/len(possible_combinations))
