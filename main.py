@@ -13,7 +13,16 @@ from get_combinations_helper import (
     is_valid_digits,
     has_trailing_zeros
 )
-from helper import get_possible_evals, filter_zero_mult_div, get_combinations_dict, delete_refs, remove_empty_lists, has_red_or_green_instance
+from helper import (
+    get_possible_evals, 
+    filter_zero_mult_div, 
+    get_combinations_dict, 
+    delete_refs, 
+    remove_empty_lists, 
+    has_red_or_green_instance,
+    evaluate,
+    get_score
+)
 from params import word_size, operations, all_digits
 
 def get_all_combinations(restrictions):
@@ -56,59 +65,104 @@ def get_all_combinations(restrictions):
             if has_trailing_zeros(full_calculation):
                 continue
 
-            possible_combinations.append([full_calculation])
+            possible_combinations.append(full_calculation)
 
     return possible_combinations
 
 
-def get_possible_combinations_from_list(combinations_dict, anti_combinations_dict, cmd):
-    cmd_slots = cmd.split(' ')
+def get_possible_combinations_from_list(possible_combinations, cmd):
+    filtered_combinations = []
+    
+    cmd_slots = cmd.strip().split(' ')
+    num_reds = {}
+    num_greens = {}
+    for slot in cmd_slots:
+        digit, color = slot
+        num_reds[digit] = num_reds.get(digit, 0)
+        num_greens[digit] = num_greens.get(digit, 0)
+        if color == 'r':
+            num_reds[digit] += 1
+        elif color == 'g':
+            num_greens[digit] += 1
 
-    for i, cmd_slot in enumerate(cmd_slots):
-        digit, color = cmd_slot
-        if color == 'g':
-            for key, vals in combinations_dict[str(i)].items():
-                if key == digit:
-                    continue
-                delete_refs(vals)
-        elif color == 'r':
-            delete_refs(combinations_dict[str(i)][digit])
-            if digit in anti_combinations_dict:
-                delete_refs(anti_combinations_dict[digit])
-        elif color == 'b':
-            r_g = has_red_or_green_instance(cmd_slots, digit)
-            if not has_red_or_green_instance(cmd_slots, digit):
-                for vals in combinations_dict.values():
-                    if digit in vals:
-                        delete_refs(vals[digit])
-            elif 'r' in r_g:
-                delete_refs(combinations_dict[str(i)][digit])
-                if digit in anti_combinations_dict:
-                    delete_refs(anti_combinations_dict[digit])
-            elif 'g' in r_g:
-                for key, vals in combinations_dict.items():
-                    if digit in vals and digit not in cmd_slots[int(key)]:
-                        delete_refs(vals[digit])
+    for comb in possible_combinations:
+        is_valid = True
+
+        for i, slot in enumerate(cmd_slots):
+            digit, color = slot
+
+            if color == 'g':
+                if comb[i] != digit:
+                    is_valid = False
+                    break
+
+            elif color == 'r':
+                if comb[i] == digit or comb.count(digit) < num_reds[digit]:
+                    is_valid = False
+                    break
+
+            elif color == 'b':
+                if comb[i] == digit or comb.count(digit) > num_reds[digit] + num_greens[digit]:
+                    is_valid = False
+                    break
+
+        if is_valid:
+            filtered_combinations.append(comb)
+
+    return filtered_combinations
+
+""" with open('all_starting_combinations_scores_ordered.pkl', 'rb') as f:
+    lst = cPickle.load(f)
+
+for comb in lst:
+    print(comb)
+    pass """
 
 
 restrictions = {}
 
 # 3b 3b 6g /b 4b 2b =g 8b
 # 6b +b 6g -g 1r 1b =g 1b
-cmd = 'r r r r r r r r'
 cnt = 0
 possible_combinations = get_all_combinations(restrictions)
 possible_combinations = filter_zero_mult_div(possible_combinations)
-combinations_dict, anti_combinations_dict = get_combinations_dict(possible_combinations)
+
 while True:
-    cmd = input('Write new cmd: ')
-    get_possible_combinations_from_list(combinations_dict, anti_combinations_dict, cmd)
-    remove_empty_lists(possible_combinations)
+    if cnt > 0:
+        cmd = input('Write new cmd: ')
+        possible_combinations = get_possible_combinations_from_list(possible_combinations, cmd)
     print('List of possible combinations', possible_combinations, len(possible_combinations))
 
-    for temp_dict in combinations_dict.values():
+    scores = []
+    for fake_result in possible_combinations:
+        evals_dict = {}
+        for fake_guess in possible_combinations:
+            eval_str = evaluate(fake_result, fake_guess)
+            evals_dict[eval_str] = evals_dict.get(eval_str, 0) + 1
+
+        score = get_score(evals_dict, len(possible_combinations))
+        scores.append([fake_result, score])
+
+        #print(fake_result, sorted(list(evals_dict.values())))
+        #print(fake_result, score)
+
+    scores.sort(key=lambda x: x[1], reverse=True)
+    print(scores)
+
+    cnt += 1
+
+    with open('all_starting_combinations_scores_ordered.pkl', 'wb') as f:
+        cPickle.dump(scores, f)
+
+
+        
+            
+
+    """ for temp_dict in combinations_dict.values():
         for _vals in temp_dict.values():
             remove_empty_lists(_vals)
+
+        ggbgbgbb
 
     if cnt > -1:
         possible_evals = get_possible_evals(cmd)
@@ -148,5 +202,7 @@ while True:
 
         scores.sort(key=lambda x: x[0], reverse=True)
         print(scores)
-
+        
     cnt += 1
+    """
+
