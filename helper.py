@@ -1,17 +1,6 @@
-import itertools
 import re
 import math
 from params import word_size
-
-def get_possible_evals(cmds):
-    allowed_eval_by_slot = []
-    for cmd in cmds.split(' '):
-        if 'g' in cmd:
-            allowed_eval_by_slot.append(['g'])
-        else:
-            allowed_eval_by_slot.append(['g', 'r', 'b'])
-
-    return list(itertools.product(*allowed_eval_by_slot))
 
 
 def filter_zero_mult_div(possible_combinations):
@@ -21,59 +10,6 @@ def filter_zero_mult_div(possible_combinations):
             filtered_comb.append(comb)
 
     return filtered_comb
-
-
-def get_combinations_dict(combs):
-    combinations_dict = {}
-    anti_combinations_dict = {}
-
-    for comb in combs:
-        for i, val in enumerate(comb[0]):
-            i = str(i)
-            if i not in combinations_dict:
-                combinations_dict[i] = {}
-
-            if val in combinations_dict[i]:
-                combinations_dict[i][val].append(comb)
-            else:
-                combinations_dict[i][val] = [comb]
-
-        for c in list('0123456789+*-/='):
-            if c in comb[0]:
-                continue
-
-            if c in anti_combinations_dict:
-                anti_combinations_dict[c].append(comb)
-            else:
-                anti_combinations_dict[c] = [comb]
-
-    return combinations_dict, anti_combinations_dict
-
-
-def delete_refs(lst):
-    for el in lst:
-        del el[:]
-
-    lst.clear()
-
-
-def remove_empty_lists(lst):
-    i = 0
-    while i < len(lst):
-        if lst[i] == []:
-            del lst[i]
-        else:
-            i += 1
-
-
-def has_red_or_green_instance(cmd_slots, digit):
-    colors = set()
-    for cmd_slot in cmd_slots:
-        d, c = cmd_slot
-        if digit == d and (c == 'r' or c == 'g'):
-            colors.add(c)
-
-    return list(colors)
 
 
 def evaluate(result, guess):
@@ -106,3 +42,11 @@ def get_score(evals_dict, num_possibilities):
         score = score - val/num_possibilities*math.log2(val/num_possibilities)
 
     return score
+
+
+def eval_str_to_cmd(eval_str, calculations):
+    cmd = ''
+    for c_eval, c_calc in zip(list(eval_str), list(calculations)):
+        cmd += f'{c_calc}{c_eval} '
+
+    return cmd[:-1]
