@@ -1,4 +1,5 @@
 import itertools
+import math
 import _pickle as cPickle
 import random
 from get_combinations_helper import (
@@ -130,7 +131,7 @@ def simulation(n_solutions):
     all_possible_combinations = get_all_combinations()
     all_possible_combinations = filter_zero_mult_div(all_possible_combinations)
 
-    #random.shuffle(all_possible_combinations)
+    random.shuffle(all_possible_combinations)
     random_solutions = all_possible_combinations[:n_solutions]
 
     diccc = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0}
@@ -143,6 +144,7 @@ def simulation(n_solutions):
                 possible_combinations = cPickle.loads(cPickle.dumps(all_possible_combinations, -1))
                 guess = '48-32=16'
                 #guess = '86*8=688'
+                #guess = all_possible_combinations[math.floor(random.random()*len(all_possible_combinations))]
 
             if guess == solution:
                 n_tries_lst.append(n_tries)
@@ -158,7 +160,10 @@ def simulation(n_solutions):
             cmd = eval_str_to_cmd(eval_str, guess)
             possible_combinations = get_possible_combinations_from_list(possible_combinations, cmd)
 
-            guess = get_suggestion(possible_combinations)[0]
+            if len(possible_combinations) > 500:
+                guess = possible_combinations[0]
+            else:
+                guess = get_suggestion(possible_combinations)[0]
 
             n_tries += 1
 
@@ -166,8 +171,5 @@ def simulation(n_solutions):
 
 # x*2/3 + n*1/3 =  
 
-n_tries = simulation(100000)
+n_tries = simulation(3000)
 print('avg. number of tries:', sum(n_tries)/len(n_tries))
-
-#rgbbrgrr correto
-#rgbrrgrb errado

@@ -1,0 +1,36 @@
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from time import sleep
+
+option = Options()
+option.add_argument("window-size=1280,800")
+option.add_argument("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.83 Safari/537.36")
+
+
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), chrome_options=option)
+driver.implicitly_wait(2)
+driver.get('https://www.nerdle.com')
+
+iframe = driver.find_element(by=By.XPATH, value='//iframe[@title="SP Consent Message"]')
+driver.switch_to.frame(iframe)
+
+#WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH,'//button[title="Accept"]'))).click()
+
+# Get rid of initial popups (cookies, instructions)
+driver.find_element(by=By.XPATH, value='//button[@title="Accept"]').click()
+driver.switch_to.default_content()
+driver.find_element(by=By.XPATH, value='//button[@aria-label="Home" and @class="focus:outline-none"]').click()
+
+action_str = '48-32=16'
+
+for ch in list(action_str):
+   if ch == '-':
+      ch = 'minus'
+   driver.find_element(by=By.XPATH, value=f'//button[@aria-label="{ch} "]').click()
+
+driver.find_element(by=By.XPATH, value=f'//button[@aria-label="ENTER "]').click()
+
+sleep(50000000)
