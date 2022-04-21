@@ -171,5 +171,5 @@ def simulation(n_solutions):
 
 # x*2/3 + n*1/3 =  
 
-n_tries = simulation(3000)
-print('avg. number of tries:', sum(n_tries)/len(n_tries))
+""" n_tries = simulation(3000)
+print('avg. number of tries:', sum(n_tries)/len(n_tries)) """

@@ -2,35 +2,90 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 
-option = Options()
-option.add_argument("window-size=1280,800")
-option.add_argument("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.83 Safari/537.36")
+from helper import filter_zero_mult_div
+from main import get_all_combinations, get_possible_combinations_from_list, get_suggestion
 
 
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), chrome_options=option)
-driver.implicitly_wait(2)
-driver.get('https://www.nerdle.com')
+def open_webpage():
+   driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+   driver.implicitly_wait(2)
+   driver.get('https://nerdlegame.com/')
 
-iframe = driver.find_element(by=By.XPATH, value='//iframe[@title="SP Consent Message"]')
-driver.switch_to.frame(iframe)
+   return driver
 
-#WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH,'//button[title="Accept"]'))).click()
 
-# Get rid of initial popups (cookies, instructions)
-driver.find_element(by=By.XPATH, value='//button[@title="Accept"]').click()
-driver.switch_to.default_content()
-driver.find_element(by=By.XPATH, value='//button[@aria-label="Home" and @class="focus:outline-none"]').click()
+def remove_popups(driver):
+   iframe = driver.find_element(by=By.XPATH, value='//iframe[@title="SP Consent Message"]')
+   driver.switch_to.frame(iframe)
 
+   #WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH,'//button[title="Accept"]'))).click()
+
+   # Get rid of initial popups (cookies, instructions)
+   driver.find_element(by=By.XPATH, value='//button[@title="Accept"]').click()
+   driver.switch_to.default_content()
+   driver.find_element(by=By.XPATH, value='//button[@aria-label="Home" and @class="focus:outline-none"]').click()
+
+
+def write_calculation_guess(driver, action_str):
+   for ch in list(action_str):
+      if ch == '-':
+         ch = 'minus'
+
+      driver.find_element(by=By.XPATH, value=f'//button[contains(@aria-label,"{ch}")]').click()
+
+   driver.find_element(by=By.XPATH, value=f'//button[@aria-label="ENTER "]').click()
+
+
+def get_color_by_class(str):
+   if RED in str:
+      return 'r'
+   elif GREEN in str:
+      return 'g'
+   elif BLACK in str:
+      return 'b'
+
+   raise Exception('Invalid color')
+
+def get_cmd(slots, calculations):
+   return ' '.join([calculations[i] + get_color_by_class(slot.get_attribute("class")) for i, slot in enumerate(slots)])
+
+possible_combinations = get_all_combinations()
+possible_combinations = filter_zero_mult_div(possible_combinations)
+
+driver = open_webpage()
+remove_popups(driver)
 action_str = '48-32=16'
+write_calculation_guess(driver, action_str)
 
-for ch in list(action_str):
-   if ch == '-':
-      ch = 'minus'
-   driver.find_element(by=By.XPATH, value=f'//button[@aria-label="{ch} "]').click()
+NO_COLOR = '#989484'
+RED = '#820458'
+BLACK = '#161803'
+GREEN = '#398874'
 
-driver.find_element(by=By.XPATH, value=f'//button[@aria-label="ENTER "]').click()
+row_num = 1
+
+while True:
+   next_row = driver.find_element(by=By.XPATH, value=f'//div[contains(@class,"flex justify-center mb-1")][{row_num}]')
+   slots = WebDriverWait(next_row, 20).until(
+         EC.presence_of_all_elements_located((By.XPATH, f'div[not(contains(@class,"{NO_COLOR}"))]'))
+   )
+
+   cmd = get_cmd(slots, action_str)
+   possible_combinations = get_possible_combinations_from_list(possible_combinations, cmd)
+   action_str = get_suggestion(possible_combinations)[0]
+
+   write_calculation_guess(driver, action_str)
+
+   row_num += 1
+
+
+
+   #possible_combinations = get_possible_combinations_from_list(possible_combinations, cmd)
+
+
 
 sleep(50000000)
