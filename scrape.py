@@ -69,6 +69,9 @@ def play_online(url: str):
       url: url for the bot to play (e.g - https://nerdlegame.com/)
    '''
 
+   if url is None:
+      url = 'https://nerdlegame.com/'
+
    all_possible_combinations = get_all_combinations()
    all_possible_combinations = filter_zero_mult_div(all_possible_combinations)
 
@@ -113,7 +116,7 @@ def play_online(url: str):
 import argparse
 
 parser = argparse.ArgumentParser(description="Play Nerdle")
-parser.add_argument('--url', type=str, required=True, help="Nerdle Url for the bot to play the game")
+parser.add_argument('--url', type=str, required=False, help="Nerdle Url for the bot to play the game")
 args = parser.parse_args()
 
 play_online(args.url)
