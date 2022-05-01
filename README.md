@@ -4,7 +4,11 @@ The aim of this code is to provide a solver for the game [Nerdle](https://nerdle
 
 And to make it "cooler", more visually appealing, and allow the user to rest and watch a robot do its magic for him, we made it so a bot would solve it live.
 
-![](images/nerdle_bot.mov)
+<video width="320" height="240" controls autoplay>
+  <source src="./images/nerdle_bot.mov" type="video/mp4">
+</video>
+
+![hey](images/nerdle_bot.mov)
 <!---
 Inserir video
 -->
