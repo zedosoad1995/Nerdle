@@ -7,7 +7,7 @@ And to make it "cooler", more visually appealing, and allow the user to rest and
 
 ![hey](images/nerdle_bot.gif)
 
-The algorithm behind it, makes use of Information Theory techniques, which this video describes in detail how to do it for the Wordle game.
+The algorithm behind it, makes use of Information Theory techniques, which this [video](https://www.youtube.com/watch?v=v68zYyaEmEA) describes in detail how to do it for the [Wordle](https://wordlegame.org/) game.
 
 Inspired by it, I wanted to try this fascinating mechanism, but with Nerdle.
 
