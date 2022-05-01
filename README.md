@@ -5,7 +5,7 @@ The aim of this code is to provide a solver for the game [Nerdle](https://nerdle
 And to make it "cooler", more visually appealing, and allow the user to rest and watch a robot do its magic for him, we made it so a bot would solve it live.
 
 <center>
-<img src="images/nerdle_bot.gif" alt="Nerdle bot"  width="500" />
+<img src="media/nerdle_bot.gif" alt="Nerdle bot"  width="500" />
 </center>
 
 The algorithm behind it, makes use of Information Theory techniques, which this [video](https://www.youtube.com/watch?v=v68zYyaEmEA) describes in detail how to do it for the [Wordle](https://wordlegame.org/) game.
@@ -18,7 +18,7 @@ But what really triggered me to begin this was to beat my family, and ruin their
 Nerdle is a game based on the core idea of Wordle, but using math operations instead of words.
 
 <center>
-<img src="images/nerdle.png" alt="Nerdle" width="300"/>
+<img src="media/nerdle.png" alt="Nerdle" width="300"/>
 </center>
 
 The basic idea is to guess a mathematically valid operation. For each guess, the computer will assign each character with a color: red, green or black. This will give information about the solution. 
