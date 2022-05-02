@@ -64,27 +64,7 @@ def is_win(cmd):
    return cmd.count('g') == 8
 
 
-def play_online(url: str):
-   '''
-      url: url for the bot to play (e.g - https://nerdlegame.com/)
-   '''
-
-   if url is None:
-      url = 'https://nerdlegame.com/'
-
-   all_possible_combinations = get_all_combinations()
-   all_possible_combinations = filter_zero_mult_div(all_possible_combinations)
-
-   possible_combinations = cPickle.loads(cPickle.dumps(all_possible_combinations, -1))
-
-   driver = open_webpage(url)
-   remove_popups(driver)
-   action_str = '48-32=16'
-
-   game_type = 'normal'
-   if any(game_keyword for game_keyword in ['instant', 'speed'] if game_keyword in url):
-      game_type = 'reactive'
-
+def play_online(driver, game_type: str, possible_combinations, action_str):
    row_num = 1
    if game_type == 'normal':
       write_calculation_guess(driver, action_str)
@@ -108,6 +88,21 @@ def play_online(url: str):
 
       row_num += 1
 
+
+def run_command(url, guess):
+   all_possible_combinations = get_all_combinations()
+   all_possible_combinations = filter_zero_mult_div(all_possible_combinations)
+   possible_combinations = cPickle.loads(cPickle.dumps(all_possible_combinations, -1))
+
+   driver = open_webpage(url)
+   remove_popups(driver)
+
+   game_type = 'normal'
+   if any(game_keyword for game_keyword in ['instant', 'speed'] if game_keyword in url):
+      game_type = 'reactive'
+
+   play_online(driver, game_type, possible_combinations, guess)
+
    sleep(1000)
 
    driver.close()
@@ -116,7 +111,8 @@ def play_online(url: str):
 import argparse
 
 parser = argparse.ArgumentParser(description="Play Nerdle")
-parser.add_argument('--url', type=str, required=False, help="Nerdle Url for the bot to play the game")
+parser.add_argument('--url', type=str, default='https://nerdlegame.com/', help="Nerdle Url for the bot to play the game")
+parser.add_argument('--guess', type=str, default='48-32=16', help="Initial guess. The default value is the best starting value we've found out")
 args = parser.parse_args()
 
-play_online(args.url)
+run_command(args.url, args.guess)
