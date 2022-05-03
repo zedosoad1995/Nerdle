@@ -12,7 +12,8 @@ from helper import (
     filter_zero_mult_div, 
     evaluate,
     get_score,
-    eval_str_to_cmd
+    eval_str_to_cmd,
+    load_all_possibilities
 )
 from params import word_size, operations, all_digits, all_equal_sign_positions
 
@@ -120,8 +121,7 @@ def get_suggestion(possible_combinations, max_combinations=None, verbose=False):
 
 
 def play():
-    possible_combinations = get_all_combinations()
-    possible_combinations = filter_zero_mult_div(possible_combinations)
+    possible_combinations = load_all_possibilities()
 
     while True:
         cmd = input('Write new cmd: ')
@@ -133,8 +133,7 @@ def play():
 
 
 def simulation(n_solutions):
-    all_possible_combinations = get_all_combinations()
-    all_possible_combinations = filter_zero_mult_div(all_possible_combinations)
+    all_possible_combinations = load_all_possibilities()
 
     random.shuffle(all_possible_combinations)
     random_solutions = all_possible_combinations[:n_solutions]
@@ -176,8 +175,7 @@ def simulation(n_solutions):
 
 
 def get_best_initial_guesses(filename='all_starting_guesses_scores', verbose=False):
-    all_possible_combinations = get_all_combinations()
-    all_possible_combinations = filter_zero_mult_div(all_possible_combinations)
+    all_possible_combinations = load_all_possibilities()
 
     scores = get_suggestion(all_possible_combinations, verbose=verbose)
 
@@ -191,6 +189,6 @@ def get_all_initial_guesses(filename='all_starting_guesses'):
     all_combinations = get_all_combinations()
     all_combinations = filter_zero_mult_div(all_combinations)
     filename_without_extension = filename.split('.')[0]
-    with open(f"{filename_without_extension}.csv", "w") as f:
+    with open(f"{filename_without_extension}.txt", "w") as f:
         for comb in all_combinations:
             f.write(comb + "\n")

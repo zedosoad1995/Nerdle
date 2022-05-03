@@ -50,3 +50,8 @@ def eval_str_to_cmd(eval_str, calculations):
         cmd += f'{c_calc}{c_eval} '
 
     return cmd[:-1]
+
+
+def load_all_possibilities(filename='all_starting_guesses.txt'):
+    with open(filename, "r") as f:
+        return f.read().splitlines()

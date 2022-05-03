@@ -8,7 +8,7 @@ from time import sleep
 import _pickle as cPickle
 import argparse
 
-from helper import filter_zero_mult_div
+from helper import filter_zero_mult_div, load_all_possibilities
 from main import get_all_combinations, get_possible_combinations_from_list, get_suggestion
 
 
@@ -91,9 +91,7 @@ def play_online(driver, game_type: str, possible_combinations, action_str):
 
 
 def run_command(urls, guess, all):
-   all_possible_combinations = get_all_combinations()
-   all_possible_combinations = filter_zero_mult_div(all_possible_combinations)
-   possible_combinations = cPickle.loads(cPickle.dumps(all_possible_combinations, -1))
+   possible_combinations = load_all_possibilities()
 
    if all:
       urls = ['https://nerdlegame.com/', 'https://speed.nerdlegame.com/', 'https://instant.nerdlegame.com/']
@@ -101,6 +99,7 @@ def run_command(urls, guess, all):
       urls = [urls]
 
    for url in urls:
+      print(len(possible_combinations))
       driver = open_webpage(url)
       remove_popups(driver)
 
