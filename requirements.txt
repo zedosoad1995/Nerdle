@@ -1,3 +1,5 @@
+about-time==3.1.1
+alive-progress==2.4.1
 async-generator==1.10
 attrs==21.4.0
 CacheControl==0.12.11
@@ -11,6 +13,7 @@ crashtest==0.3.1
 cryptography==36.0.2
 distlib==0.3.4
 filelock==3.6.0
+grapheme==0.6.0
 h11==0.13.0
 html5lib==1.1
 idna==3.3

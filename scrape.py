@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 import _pickle as cPickle
+import argparse
 
 from helper import filter_zero_mult_div
 from main import get_all_combinations, get_possible_combinations_from_list, get_suggestion
@@ -79,40 +80,45 @@ def play_online(driver, game_type: str, possible_combinations, action_str):
 
       cmd = get_cmd(slots, action_str)
       if is_win(cmd):
-         break
+         return
 
       possible_combinations = get_possible_combinations_from_list(possible_combinations, cmd)
-      action_str = get_suggestion(possible_combinations)[0]
+      action_str = get_suggestion(possible_combinations)[0][0]
 
       write_calculation_guess(driver, action_str)
 
       row_num += 1
 
 
-def run_command(url, guess):
+def run_command(urls, guess, all):
    all_possible_combinations = get_all_combinations()
    all_possible_combinations = filter_zero_mult_div(all_possible_combinations)
    possible_combinations = cPickle.loads(cPickle.dumps(all_possible_combinations, -1))
 
-   driver = open_webpage(url)
-   remove_popups(driver)
+   if all:
+      urls = ['https://nerdlegame.com/', 'https://speed.nerdlegame.com/', 'https://instant.nerdlegame.com/']
+   else:
+      urls = [urls]
 
-   game_type = 'normal'
-   if any(game_keyword for game_keyword in ['instant', 'speed'] if game_keyword in url):
-      game_type = 'reactive'
+   for url in urls:
+      driver = open_webpage(url)
+      remove_popups(driver)
 
-   play_online(driver, game_type, possible_combinations, guess)
+      game_type = 'normal'
+      if any(game_keyword for game_keyword in ['instant', 'speed'] if game_keyword in url):
+         game_type = 'reactive'
+
+      play_online(driver, game_type, possible_combinations, guess)
 
    sleep(1000)
 
    driver.close()
 
 
-import argparse
-
 parser = argparse.ArgumentParser(description="Play Nerdle")
 parser.add_argument('--url', type=str, default='https://nerdlegame.com/', help="Nerdle Url for the bot to play the game")
 parser.add_argument('--guess', type=str, default='48-32=16', help="Initial guess. The default value is the best starting value we've found out")
+parser.add_argument('-a', '--all', action='store_true', help="Flag to run all daily games")
 args = parser.parse_args()
 
-run_command(args.url, args.guess)
+run_command(args.url, args.guess, args.all)

@@ -12,24 +12,24 @@ def filter_zero_mult_div(possible_combinations):
     return filtered_comb
 
 
-def evaluate(result, guess):
+def evaluate(guess, result):
     eval_lst = ['g'] * word_size 
 
-    result = list(result)
     guess = list(guess)
+    result = list(result)
 
-    for i, c in enumerate(result):
-        if c == guess[i]:
-            result[i] = '_'
+    for i, c in enumerate(guess):
+        if c == result[i]:
             guess[i] = '_'
+            result[i] = '_'
     
-    for i, c in enumerate(result):
+    for i, c in enumerate(guess):
         if c == '_':
             continue
         
-        if guess.count(c) > 0:
+        if result.count(c) > 0:
             eval_lst[i] = 'r'
-            guess[guess.index(c)] = '_'
+            result[result.index(c)] = '_'
         else:
             eval_lst[i] = 'b'
 

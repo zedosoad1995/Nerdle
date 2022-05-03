@@ -1,5 +1,7 @@
 import itertools
 import _pickle as cPickle
+import csv
+from alive_progress import alive_bar
 import random
 from get_combinations_helper import (
     get_operation_combinations,
@@ -97,20 +99,24 @@ def get_possible_combinations_from_list(possible_combinations, cmd):
     return filtered_combinations
 
 
-def get_suggestion(possible_combinations):
+def get_suggestion(possible_combinations, max_combinations=None, verbose=False):
     scores = []
-    for fake_result in possible_combinations:
-        evals_dict = {}
-        for fake_guess in possible_combinations:
-            eval_str = evaluate(fake_result, fake_guess)
-            evals_dict[eval_str] = evals_dict.get(eval_str, 0) + 1
+    with alive_bar(len(possible_combinations[:max_combinations]), disable=not verbose) as bar:
+        for i in range(len(possible_combinations[:max_combinations])):
+            fake_guess = possible_combinations[i]
+            evals_dict = {}
+            for fake_result in possible_combinations:
+                eval_str = evaluate(fake_guess, fake_result)
+                evals_dict[eval_str] = evals_dict.get(eval_str, 0) + 1
 
-        score = get_score(evals_dict, len(possible_combinations))
-        scores.append([fake_result, score])
+            score = get_score(evals_dict, len(possible_combinations))
+            scores.append([fake_guess, score])
+
+            bar()
 
     scores.sort(key=lambda x: x[1], reverse=True)
 
-    return scores[0]
+    return scores
 
 
 def play():
@@ -122,7 +128,7 @@ def play():
         possible_combinations = get_possible_combinations_from_list(possible_combinations, cmd)
         print('List of possible combinations', possible_combinations, len(possible_combinations))
 
-        suggestion = get_suggestion(possible_combinations)
+        suggestion = get_suggestion(possible_combinations)[0]
         print('Best Guess', suggestion)
 
 
@@ -168,7 +174,23 @@ def simulation(n_solutions):
 
     return n_tries_lst
 
-# x*2/3 + n*1/3 =  
 
-""" n_tries = simulation(3000)
-print('avg. number of tries:', sum(n_tries)/len(n_tries)) """
+def get_best_initial_guesses(filename='all_starting_guesses_scores', verbose=False):
+    all_possible_combinations = get_all_combinations()
+    all_possible_combinations = filter_zero_mult_div(all_possible_combinations)
+
+    scores = get_suggestion(all_possible_combinations, verbose=verbose)
+
+    filename_without_extension = filename.split('.')[0]
+    with open(f"{filename_without_extension}.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(scores)
+
+
+def get_all_initial_guesses(filename='all_starting_guesses'):
+    all_combinations = get_all_combinations()
+    all_combinations = filter_zero_mult_div(all_combinations)
+    filename_without_extension = filename.split('.')[0]
+    with open(f"{filename_without_extension}.csv", "w") as f:
+        for comb in all_combinations:
+            f.write(comb + "\n")
