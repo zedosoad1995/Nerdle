@@ -64,3 +64,52 @@ You may also run the bot to play for previous days. For instance, if you wish to
 ```bash
 python3 scrape.py --url https://instant.nerdlegame.com/20220415
 ```
+## So, what is the best starter?
+
+48-32=16.
+
+From all the possible 17,723 starting combinations the combination with the highest entropy was "48-32=16". You can check all the starters ordered by score in [here](data/all_starting_guesses_scores.csv).
+
+If we simulate using all possible solution, starting with "48-32=16" and always playing the best suggestions from our algorithm, we end up with the following results:
+
+<p align="center">
+<img src="data/best_start_best_sug.png" alt="Best Start, best suggestions" width="500"/>
+</p>
+
+So, an average of 3.077 tries, where 83.423% of the solutions take 3 or less tries to complete. And zero cases where we lose (more than 6 times).
+
+#### How much does the starter matter?
+
+Let's forget for a moment the algorithm suggestion. And instead just play randomly, but always starting with the magic number: "48-32=16". 
+How much would that matter? And how much better it would be from the worst starter (86*8=688)?
+
+<p align="center">
+<img src="data/table_compare_starter_random_suggestions.png" alt="Table starter comparison, random suggestions" width="700"/>
+</p>
+
+We can clearly observe that the starter does indeed make a considerable difference. If we compare the best starter vs the worst, we get 9.44% vs 1.44% wins in 2 tries, which means that we are 6.5 times more likely to do it in 2 tries.
+
+#### Importance of the algorithm's suggestion
+
+Now let's analyze the influence of using the top plays that the algorithm suggests.
+
+If we compare using the algorithm vs random plays, we get the following table (both with the starter 48-32=16):
+
+<p align="center">
+<img src="data/table_compare_random_best.png" alt="Table random vs algo" width="700"/>
+</p>
+
+As we can observe, using our algo does contribute for an improvement from 3.228 to 3.077 average tries. Or in other words, 83.423% vs 71.185% of the times with a win in 3 or less tries.
+
+The number of wins with 2 tries is almost the same. The biggest diffence appearing with more tries. For 4 tries, random choice will happen 1.6 more times than with our algorithm; 4.1 more times for 5 tries; and 10.3 more times for 6 tries. The algorithm is exponencially better, the longer the game goes.
+
+#### Just for fun: the worst possible combinations
+
+Just for fun, what would be the results for the worst possible plays? This means, the worst starter (86*8=688), combined with the lowest ranked suggestions given by the algorithm.
+
+<p align="center">
+<img src="data/worst_start_worst_sug.png" alt="Worst possible play" width="500"/>
+</p>
+
+(Being technically accurate, these are the low 1% suggestions, not the worst. As the simulation with the worst suggestion would take a very long time)
+

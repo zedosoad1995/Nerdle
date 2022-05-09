@@ -8,8 +8,8 @@ from time import sleep
 import _pickle as cPickle
 import argparse
 
-from helper import filter_zero_mult_div, load_all_possibilities
-from main import get_all_combinations, get_possible_combinations_from_list, get_suggestion
+from helper import load_all_possibilities
+from main import get_possible_combinations_from_list, get_suggestion
 
 
 NO_COLOR = '#989484'

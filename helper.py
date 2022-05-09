@@ -3,10 +3,10 @@ import math
 from params import word_size
 
 
-def filter_zero_mult_div(possible_combinations):
+def filter_lone_zero(possible_combinations):
     filtered_comb = []
     for comb in possible_combinations:
-        if not re.search("[^\d]0\*|\*0|^0|[^\d]0\/", comb):
+        if not re.search("^0|[^\d]0\/|[\-|\+|\*]0", comb):
             filtered_comb.append(comb)
 
     return filtered_comb
