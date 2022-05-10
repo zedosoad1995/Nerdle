@@ -76,7 +76,7 @@ If we simulate using all possible solution, starting with "48-32=16" and always 
 <img src="data/best_start_best_sug.png" alt="Best Start, best suggestions" width="500"/>
 </p>
 
-So, an average of 3.077 tries, where 83.423% of the solutions take 3 or less tries to complete. And zero cases where we lose (more than 6 times).
+So, an average of 3.077 tries, where 83.423% of the solutions take 3 or less tries to complete. And zero cases where we lose (more than 6 tries).
 
 #### How much does the starter matter?
 
@@ -101,9 +101,9 @@ If we compare using the algorithm vs random plays, we get the following table (b
 
 As we can observe, using our algo does contribute for an improvement from 3.228 to 3.077 average tries. Or in other words, 83.423% vs 71.185% of the times with a win in 3 or less tries.
 
-The number of wins with 2 tries is almost the same. The biggest diffence appearing with more tries. For 4 tries, random choice will happen 1.6 more times than with our algorithm; 4.1 more times for 5 tries; and 10.3 more times for 6 tries. The algorithm is exponencially better, the longer the game goes.
+The number of wins with 2 tries is almost the same. The biggest diffence appearing with more tries. For 4 tries, random choice will happen 1.6 times more often than with the algorithm; 4.1 times more times for 5 tries; and 10.3 times more times for 6 tries. The algorithm gets exponencially better, the longer the game goes on.
 
-#### Just for fun: the worst possible combinations
+#### Just for fun: the worst possible plays
 
 Just for fun, what would be the results for the worst possible plays? This means, the worst starter (86*8=688), combined with the lowest ranked suggestions given by the algorithm.
 
