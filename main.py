@@ -137,83 +137,7 @@ def play():
         print('Best Guess', suggestion)
 
 
-def simulation(n_solutions=None, 
-                starting_guess='48-32=16', 
-                sug_possibilities_th=100, 
-                fig_name='sim_res',
-                strategy='best'):
-    all_possible_combinations = load_all_possibilities()
-
-    if n_solutions is not None or True:
-        random.shuffle(all_possible_combinations)
-    random_solutions = all_possible_combinations[:n_solutions]
-
-    tries_dict = {}
-    n_tries_lst = []
-    avg_tries = 0
-
-    dct = {}
-
-    _, ax = plt.subplots()
-
-    for i, solution in enumerate(random_solutions):
-        n_tries = 1
-        while True:
-            if n_tries == 1:
-                possible_combinations = all_possible_combinations
-                guess = starting_guess
-
-            if guess == solution:
-                n_tries_lst.append([solution, n_tries])
-                avg_tries = (avg_tries*i + n_tries)/(i + 1)
-                tries_dict[n_tries] = tries_dict.get(n_tries, 0) + 1
-
-
-                if i%40 == -1:
-                    ax.clear()
-                    bars = ax.bar(tries_dict.keys(), tries_dict.values(), color=(0.2, 0.4, 0.6, 1))
-                    for p in bars:
-                        width = p.get_width()
-                        height = p.get_height()
-                        x, y = p.get_xy()
-                        
-                        plt.text(x+width/2,
-                                y+height*1.01,
-                                str(round(height/(i+1)*100, 3))+'%',
-                                ha='center')
-                    
-                    x_disp = (ax.get_xlim()[-1] - ax.get_xlim()[0])*0.98 + ax.get_xlim()[0]
-                    plt.text(x_disp, 
-                            ax.get_ylim()[-1]*0.98, 
-                            'Avg. tries: ' + str(round(avg_tries, 3)), 
-                            fontsize = 12, 
-                            ha='right', 
-                            va='top')
-
-                    plt.pause(0.001)
-
-                print(tries_dict)
-                """ disp_dic = {}
-                for key, val in diccc.items():
-                    disp_dic[key] = round(val/(i + 1), 4)
-                print(solution, n_tries, disp_dic, avg_tries) """
-                break
-
-            eval_str = evaluate(guess, solution)
-            cmd = eval_str_to_cmd(eval_str, guess)
-            possible_combinations = get_possible_combinations_from_list(possible_combinations, cmd)
-
-            if strategy == 'best':
-                guess = get_suggestion(possible_combinations, 
-                                        max_combinations=min(sug_possibilities_th, len(possible_combinations)))[0][0]
-            elif strategy == 'worst':
-                guess = get_suggestion(possible_combinations, 
-                                        max_combinations=min(sug_possibilities_th, len(possible_combinations)))[-1][0]
-            elif strategy == 'random':
-                guess = possible_combinations[random.randrange(len(possible_combinations))]
-
-            n_tries += 1
-
+def plot_simulation(ax, tries_dict, avg_tries, i):
     ax.clear()
     ax.set_xlabel('num. tries')
     ax.set_ylabel('freq.')
@@ -236,9 +160,67 @@ def simulation(n_solutions=None,
             ha='right', 
             va='top')
 
-    plt.savefig(fig_name.split('.')[0] + '.png')
+    plt.pause(0.001)
 
-    return n_tries_lst, tries_dict
+def simulation(n_solutions=None, 
+                starting_guess='48-32=16', 
+                sug_possibilities_th=100, 
+                fig_name='sim_res',
+                strategy='best',
+                plot_live=False):
+    all_possible_combinations = load_all_possibilities()
+
+    if n_solutions is not None or True:
+        random.shuffle(all_possible_combinations)
+    random_solutions = all_possible_combinations[:n_solutions]
+
+    tries_dict = {}
+    n_tries_lst = []
+    avg_tries = 0
+
+    if plot_live:
+        _, ax = plt.subplots()
+
+    with alive_bar(len(random_solutions)) as bar:
+        for i, solution in enumerate(random_solutions):
+            n_tries = 1
+            while True:
+                if n_tries == 1:
+                    possible_combinations = all_possible_combinations
+                    guess = starting_guess
+
+                if guess == solution:
+                    n_tries_lst.append([solution, n_tries])
+                    avg_tries = (avg_tries*i + n_tries)/(i + 1)
+                    tries_dict[n_tries] = tries_dict.get(n_tries, 0) + 1
+
+
+                    if plot_live and i%40 == 0:
+                        plot_simulation(ax, tries_dict, avg_tries, i)
+                    break
+
+                eval_str = evaluate(guess, solution)
+                cmd = eval_str_to_cmd(eval_str, guess)
+                possible_combinations = get_possible_combinations_from_list(possible_combinations, cmd)
+
+                if strategy == 'best':
+                    guess = get_suggestion(possible_combinations, 
+                                            max_combinations=min(sug_possibilities_th, len(possible_combinations)))[0][0]
+                elif strategy == 'worst':
+                    guess = get_suggestion(possible_combinations, 
+                                            max_combinations=min(sug_possibilities_th, len(possible_combinations)))[-1][0]
+                elif strategy == 'random':
+                    guess = possible_combinations[random.randrange(len(possible_combinations))]
+
+                n_tries += 1
+
+            bar()
+
+    if fig_name:
+        _, ax = plt.subplots()
+        plot_simulation(ax, tries_dict, avg_tries, i)
+        plt.savefig(fig_name.split('.')[0] + '.png')
+
 
 
 def get_best_initial_guesses(filename='all_starting_guesses_scores', verbose=False):
@@ -259,44 +241,3 @@ def get_all_initial_guesses(filename='all_starting_guesses'):
     with open(f"{filename_without_extension}.txt", "w") as f:
         for comb in all_combinations:
             f.write(comb + "\n")
-
-#get_best_initial_guesses(verbose=True)
-simulation(starting_guess='86*8=688', fig_name='worst_start_worst_sugd', strategy='worst')
-simulation(starting_guess='48-32=16', fig_name='best_start_best_sug')
-simulation(starting_guess='48-32=16', fig_name='best_start_random_sug', strategy='random')
-simulation(starting_guess='86*8=688', fig_name='worst_start_best_sug')
-simulation(starting_guess='86*8=688', fig_name='worst_start_random_sug', strategy='random')
-simulation(starting_guess='86*8=688', fig_name='worst_start_worst_sug', strategy='worst')
-
-
-""" simulation(starting_guess='48-32=16', fig_name='best_start')
-simulation(starting_guess='48-32=16', fig_name='best_start_random', strategy='random')
-simulation(starting_guess='48-32=16', fig_name='best_start_worst', strategy='worst')
-simulation(starting_guess='6+5+8=19', fig_name='avg_start')
-simulation(starting_guess='6+5+8=19', fig_name='avg_start_random', strategy='random')
-simulation(starting_guess='6+5+8=19', fig_name='avg_start_worst', strategy='worst')
-simulation(starting_guess='86*8=688', fig_name='worst_start')
-simulation(starting_guess='86*8=688', fig_name='worst_start_random', strategy='random')
-simulation(starting_guess='86*8=688', fig_name='worst_start_worst', strategy='worst')
- """
-""" for _ in range(200):
-    rand = random.random()
-    if rand < 0.1:
-        print('.')
-    elif rand > 0.8:
-        print('_')
-    else:
-        print('v') """
-
-""" dct = {}
-for _ in range(10):
-    lst = list(range(10))
-    random.shuffle(lst)
-    for val in lst:
-        if val not in dct:
-            dct[val] = [0]*len(lst)
-        dct[val][lst.index(val)] += 1
-
-print(dct)
-
- """
