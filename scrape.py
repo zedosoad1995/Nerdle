@@ -5,7 +5,6 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
-import _pickle as cPickle
 import argparse
 
 from helper import load_all_possibilities
@@ -89,8 +88,7 @@ def play_online(driver, game_type: str, possible_combinations, action_str):
 
       row_num += 1
 
-
-def run_command(urls, guess, all):
+def scrape(urls, guess, all):
    possible_combinations = load_all_possibilities()
 
    if all:
@@ -112,12 +110,3 @@ def run_command(urls, guess, all):
    sleep(1000)
 
    driver.close()
-
-
-parser = argparse.ArgumentParser(description="Play Nerdle")
-parser.add_argument('--url', type=str, default='https://nerdlegame.com/', help="Nerdle Url for the bot to play the game")
-parser.add_argument('--guess', type=str, default='48-32=16', help="Initial guess. The default value is the best starting value we've found out")
-parser.add_argument('-a', '--all', action='store_true', help="Flag to run all daily games")
-args = parser.parse_args()
-
-run_command(args.url, args.guess, args.all)
