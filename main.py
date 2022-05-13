@@ -1,6 +1,5 @@
 import itertools
-from time import sleep
-import _pickle as cPickle
+import re
 import csv
 from alive_progress import alive_bar
 import random
@@ -125,16 +124,32 @@ def get_suggestion(possible_combinations, max_combinations=None, verbose=False):
     return scores
 
 
+def is_cmd_valid(str):
+    pattern = re.compile("([0-9+\-*\/=][rgb]\s){7}[0-9][rgb]")
+    p = pattern.match(str)
+    print(p)
+    print(len(str))
+    if p is None and len(str) != 3*7 + 2:
+        return None
+    
+    return p
+
+
 def play():
     possible_combinations = load_all_possibilities()
-
     while True:
         cmd = input('Write new cmd: ')
+        if is_cmd_valid(cmd) is None:
+            print('Invalid command. Example of valid cmd: 4g 8b -r 1g 2g =g 3r 6b\n' + \
+                'Must contain 8 slots, and each slot must have 2 characters:\n' + \
+                '\t-Digit (0-9) or operations (+-*/=)\n' + \
+                '\t-g (green), r (red) or b (black)')
+            continue
         possible_combinations = get_possible_combinations_from_list(possible_combinations, cmd)
-        print('List of possible combinations', possible_combinations, len(possible_combinations))
+        print('List of possible combinations:', possible_combinations, len(possible_combinations))
 
-        suggestion = get_suggestion(possible_combinations)[0]
-        print('Best Guess', suggestion)
+        suggestion = get_suggestion(possible_combinations)[0][0]
+        print('Best Guess:', suggestion)
 
 
 def plot_simulation(ax, tries_dict, avg_tries, i):
@@ -223,7 +238,7 @@ def simulation(n_solutions=None,
 
 
 
-def get_best_initial_guesses(filename='all_starting_guesses_scores', verbose=False):
+def get_initial_guesses_scores(filename='all_starting_guesses_scores', verbose=False):
     all_possible_combinations = load_all_possibilities()
 
     scores = get_suggestion(all_possible_combinations, verbose=verbose)
