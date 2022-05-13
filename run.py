@@ -39,7 +39,7 @@ if __name__ == '__main__':
                         help='Max number of possible combinations that the algo will consider.' + \
                             'If None is passed, then there is no limit.' + \
                             'The reasone for this parameter to exist, is to make the simulation faster.' + \
-                            'A lower value will make the simulation quicker, with the expense of not being 100% optimized' + \
+                            'A lower value will make the simulation quicker, with the expense of not being 100%% optimized' + \
                             'However, if the user chooses a good starting guess (e.g 48-32=16), the default value of 100 ' + \
                             'will probably never be passed. There will always be less than 100 choices.')
     parser.add_argument('--n_solutions', 
@@ -50,17 +50,17 @@ if __name__ == '__main__':
     parser.add_argument('--fig_name', 
                         type=str, 
                         default='sim_res', 
-                        help="The name of the figure, which will contain the statistics of the simulations." + \
+                        help="The name of the figure, which will contain the statistics of the simulations. " + \
                             "If the user passes None, then nothing will be saved")
     parser.add_argument('--strategy', 
                         type=str,
                         choices=[BEST, WORST, RANDOM],
                         default=BEST, 
                         help='Strategy type for the algo to simulate.')
-    parser.add_argument('--plot_live', 
+    parser.add_argument('--hide_plot_live', 
                         action='store_true',
                         default=False,
-                        help="Allows to see a plot of the statistics of the simulation live")
+                        help="Hide live plot of the statistics of the simulation")
     args = parser.parse_args()
 
     if args.mode == SCRAPE:
@@ -71,6 +71,6 @@ if __name__ == '__main__':
                     sug_possibilities_th=args.suggestions_th, 
                     fig_name=args.fig_name, 
                     strategy=args.strategy,
-                    plot_live=args.plot_live)
+                    plot_live=not args.hide_plot_live)
     elif args.mode == PLAY:
         play()

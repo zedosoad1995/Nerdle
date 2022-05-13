@@ -42,28 +42,6 @@ To install the requirements, run the following command:
 pip3 install -r requirements.txt
 ```
 
-## Run bot solver
-
-You can run a robot to solve in real-time a nerdle puzzle on the [official website](https://nerdlegame.com/) with:
-
-```bash
-python3 scrape.py
-```
-
-You may also run the bot for other nerdle game with:
-```bash
-python3 scrape.py --url https://instant.nerdlegame.com/
-```
-
-for the [instant](https://instant.nerdlegame.com/) version, for example.
-
-Currently we support the [classic](https://nerdlegame.com/), the [instant](https://instant.nerdlegame.com/) and the [speed](https://speed.nerdlegame.com/) game types. The [mini](https://mini.nerdlegame.com/) game type is not yet done.
-
-You may also run the bot to play for previous days. For instance, if you wish to play the instant version from 15/04/2022, you must run:
-
-```bash
-python3 scrape.py --url https://instant.nerdlegame.com/20220415
-```
 ## So, what is the best starter?
 
 48-32=16.
@@ -113,3 +91,80 @@ Just for fun, what would be the results for the worst possible plays? This means
 
 (Being technically accurate, these are the low 1% suggestions, not the worst. As the simulation with the worst suggestion would take a very long time)
 
+## Usage
+
+Currently we support 3 modes through the command line:
+* `scrape` - Which runs a bot that will open a browser and automatically solve any Nerdle game live.
+* `play` - We will give an optimal suggestion, according to your previous move and the program's evaluation.
+* `simulation` - Allows you to simulate how well it performs given an initial guess, and will run it with all possible combinations, and display the statistics.
+
+#### Run bot solver
+
+You can run a robot to solve in real-time a nerdle puzzle on the [official website](https://nerdlegame.com/) with:
+
+```bash
+python3 run.py -m scrape
+```
+
+You may also run the bot for other nerdle game with:
+```bash
+python3 run.py -m scrape --url https://instant.nerdlegame.com/
+```
+
+for the [instant](https://instant.nerdlegame.com/) version, for example.
+
+Currently we support the [classic](https://nerdlegame.com/), the [instant](https://instant.nerdlegame.com/) and the [speed](https://speed.nerdlegame.com/) game types. The [mini](https://mini.nerdlegame.com/) game type is not yet done.
+
+You may also run the bot to play for previous days. For instance, if you wish to play the instant version from 15/04/2022, you must run:
+
+```bash
+python3 run.py -m scrape --url https://instant.nerdlegame.com/20220415
+```
+
+#### Get suggestions for the next move
+
+```bash
+python3 run.py -m play
+```
+
+```bash
+Write new cmd: 4b 8b -b 3b 2r =r 1r 6r
+List of possible combinations: ['1/6*12=2', '12*1/6=2', '12/6+7=9', ...] 62
+Best Guess: 2*76=152
+Write new cmd: 2b *g 7b 6r =r 1r 5r 2g
+List of possible combinations: ['6*5/15=2', '5*6/15=2'] 2
+Best Guess: 6*5/15=2
+```
+
+Corresponds to this game:
+
+<p align="center">
+<img src="media/suggestion_game_example.png" alt="Nerdle" width="300"/>
+</p>
+
+Here you will write the command with your previous play, and the evaluation of the program.
+The command must have 8 set of characters, where each set begins with the character played (0-9+-*/=), and the second character is the program's evaluation (g - green, r - red, b - black).
+
+#### Simulation
+
+If you want to know how well will an initial guess perform, you must run the following command:
+
+```bash
+python3 run.py -m simulate --guess 48-32=16
+```
+
+And it will show the histogram of the results live, and at the end will save it.
+
+You can also test for different strategies, for example, instead of always simulating the optimal moves, you can do it with random moves (similar to a human):
+
+```bash
+python3 run.py -m simulate --guess 48-32=16 --strategy random
+```
+
+#### Other
+
+For more information about the options you can run in the command line, type:
+
+```bash
+python3 run.py --help
+```

@@ -127,8 +127,6 @@ def get_suggestion(possible_combinations, max_combinations=None, verbose=False):
 def is_cmd_valid(str):
     pattern = re.compile("([0-9+\-*\/=][rgb]\s){7}[0-9][rgb]")
     p = pattern.match(str)
-    print(p)
-    print(len(str))
     if p is None and len(str) != 3*7 + 2:
         return None
     
