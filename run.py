@@ -1,22 +1,24 @@
 import argparse
-from main import simulation
+from main import play, simulation
 
 from scrape import scrape
 
 SCRAPE = 'scrape'
 SIMULATE = 'simulate'
+PLAY = 'play'
 
 # Strategy names
 BEST = 'best'
 WORST = 'worst'
 RANDOM = 'random'
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Play Nerdle")
     parser.add_argument('-m',
                         '--mode',
                         help='Run mode. Default scrape',
-                        choices=[SCRAPE, SIMULATE],
+                        choices=[SCRAPE, SIMULATE, PLAY],
                         default=None,
                         required=True)
     parser.add_argument('--url', 
@@ -70,3 +72,5 @@ if __name__ == '__main__':
                     fig_name=args.fig_name, 
                     strategy=args.strategy,
                     plot_live=args.plot_live)
+    elif args.mode == PLAY:
+        play()
