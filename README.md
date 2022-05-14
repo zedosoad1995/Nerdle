@@ -7,7 +7,7 @@ We also found the optimal starting guess: 48-32=16.
 
 Features:
 * Bot that can instantly solve any Nerdle game, live on your browser
-* Supports 3 game types: Classic, Instant and Speed
+* Supports 3 game types: [Classic](https://nerdlegame.com/), [Instant](https://instant.nerdlegame.com/) and [Speed](https://speed.nerdlegame.com/)
 * Suggestion of the best moves, through the command line
 * Ability to simulate for any starting guess, and for different strategies, against all 17,723 combinations
 * An extensive list of [all starting guesses scored](data/all_starting_guesses_scores.csv), from best to worst
