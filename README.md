@@ -107,12 +107,12 @@ Currently we support 3 modes through the command line:
 You can run a robot to solve in real-time a nerdle puzzle on the [official website](https://nerdlegame.com/) with:
 
 ```bash
-python3 run.py -m scrape
+python3 run.py -m run_bot
 ```
 
 You can also run the bot for other nerdle game with:
 ```bash
-python3 run.py -m scrape --url https://instant.nerdlegame.com/
+python3 run.py -m run_bot --url https://instant.nerdlegame.com/
 ```
 
 for the [instant](https://instant.nerdlegame.com/) version, for example.
@@ -122,7 +122,7 @@ Currently we support the [classic](https://nerdlegame.com/), the [instant](https
 You may also run the bot to play for previous days. For instance, if you wish to play the instant version from 15/04/2022, you must run:
 
 ```bash
-python3 run.py -m scrape --url https://instant.nerdlegame.com/20220415
+python3 run.py -m run_bot --url https://instant.nerdlegame.com/20220415
 ```
 
 #### Solve for an unknown solution
