@@ -1,7 +1,7 @@
 import argparse
-from play import play
-from simulate import simulation
-from run_bot import run_bot
+from running_modes.play import play
+from running_modes.simulate import simulation
+from running_modes.run_bot import run_bot
 
 RUN_BOT = 'run_bot'
 SIMULATE = 'simulate'
