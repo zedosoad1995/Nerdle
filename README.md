@@ -8,7 +8,7 @@ We also found the optimal starting guess: 48-32=16.
 Features:
 * Bot that can instantly solve any Nerdle game, live on your browser
 * Supports 3 game types: [Classic](https://nerdlegame.com/), [Instant](https://instant.nerdlegame.com/) and [Speed](https://speed.nerdlegame.com/)
-* Suggestion of the best moves, through the command line
+* Suggestion for the best moves, through the command line
 * Ability to simulate for any starting guess, and for different strategies, against all 17,723 combinations
 * An extensive list of [all starting guesses scored](data/all_starting_guesses_scores.csv), from best to worst
 * A study on the statistics of the game and the effects of this solver
@@ -17,7 +17,7 @@ Features:
 <img src="media/nerdle_bot.gif" alt="Nerdle bot"  width="500" />
 </p>
 
-The algorithm behind it, makes use of Information Theory techniques, which this [video](https://www.youtube.com/watch?v=v68zYyaEmEA) describes in detail how to do it for the [Wordle](https://wordlegame.org/) game.
+The algorithm behind it makes use of Information Theory techniques, which this [video](https://www.youtube.com/watch?v=v68zYyaEmEA) describes in detail how to do it for the [Wordle](https://wordlegame.org/) game.
 
 ## Rules
 Nerdle is a game based on the core idea of Wordle, but using math operations instead of words.
@@ -33,14 +33,14 @@ The meaning of each color is the following:
 * red - correct character in the wrong place
 * black - character does not exist
 
-To see more about the rules, check this link: https://faqs.nerdlegame.com/
+To see more about the rules, check out this link: https://faqs.nerdlegame.com/
 
 
 ## So, what is the best starter?
 
 48-32=16.
 
-From all the possible 17,723 starting combinations the one with the highest entropy was "48-32=16". You can check all the starters ordered by score in [here](data/all_starting_guesses_scores.csv).
+From all the possible 17,723 starting combinations the one with the highest entropy is "48-32=16". You can check all the starters ordered by score in [here](data/all_starting_guesses_scores.csv).
 
 Starting with "48-32=16" and always playing the best suggestions given by the algorithm, gives the following stats:
 
@@ -62,13 +62,13 @@ The game is won in 2 tries 9.44% vs 1.44% (best vs worst starter), or 6.5x more 
 
 #### Playing randomly vs Optimal moves
 
-If the user plays the optimal moves given by the algorithm vs plays it randomly (all with starter 48-32=16), the results are:
+If the user plays the optimal moves given by the algorithm vs plays it randomly (all with the starter 48-32=16), the results are:
 
 <p align="center">
 <img src="data/table_compare_random_best.png" alt="Table random vs algo" width="700"/>
 </p>
 
-Using the algo contributes for an improvement from 3.228 to 3.077 average tries. Or in other words, 83.423% vs 71.185% of the times with a win in 3 or less tries.
+Using the algo contributes to an improvement from 3.228 to 3.077 average tries. Or in other words, 83.423% vs 71.185% of the times with a win in 3 or less tries.
 
 The number of wins with 2 tries is almost the same. The biggest diffence appears with more tries. 
 
