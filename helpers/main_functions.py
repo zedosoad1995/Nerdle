@@ -10,7 +10,7 @@ from helpers.helper import (
     evaluate,
     get_score,
 )
-from params import word_size, operations, all_digits, all_equal_sign_positions
+from helpers.params import word_size, operations, all_digits, all_equal_sign_positions
 
 def get_all_combinations():
     possible_operation_combinations = []

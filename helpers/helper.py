@@ -1,6 +1,6 @@
 import re
 import math
-from params import word_size
+from helpers.params import word_size
 
 
 def filter_lone_zero(possible_combinations):
