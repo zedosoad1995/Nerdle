@@ -136,6 +136,7 @@ def is_cmd_valid(str):
 def play():
     possible_combinations = load_all_possibilities()
     while True:
+        print('Best Guess: 48-32=16')
         cmd = input('Write new cmd: ')
         if is_cmd_valid(cmd) is None:
             print('Invalid command. Example of valid cmd: 4g 8b -r 1g 2g =g 3r 6b\n' + \
