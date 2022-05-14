@@ -6,8 +6,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 
-from helper import load_all_possibilities
-from main import get_possible_combinations_from_list, get_suggestion
+from helpers.helper import load_all_moves
+from helpers.main_functions import filter_combinations, get_suggestions
 
 
 NO_COLOR = '#989484'
@@ -80,15 +80,16 @@ def play_online(driver, game_type: str, possible_combinations, action_str):
       if is_win(cmd):
          return
 
-      possible_combinations = get_possible_combinations_from_list(possible_combinations, cmd)
-      action_str = get_suggestion(possible_combinations)[0][0]
+      possible_combinations = filter_combinations(possible_combinations, cmd)
+      action_str = get_suggestions(possible_combinations)[0][0]
 
       write_calculation_guess(driver, action_str)
 
       row_num += 1
 
-def scrape(urls, guess, all):
-   possible_combinations = load_all_possibilities()
+
+def run_bot(urls, guess, all):
+   possible_combinations = load_all_moves()
 
    if all:
       urls = ['https://nerdlegame.com/', 'https://speed.nerdlegame.com/', 'https://instant.nerdlegame.com/']

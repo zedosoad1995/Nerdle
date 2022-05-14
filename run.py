@@ -1,7 +1,7 @@
 import argparse
-from main import play, simulation
-
-from scrape import scrape
+from play import play
+from simulate import simulation
+from run_bot import run_bot
 
 RUN_BOT = 'run_bot'
 SIMULATE = 'simulate'
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Play Nerdle")
     parser.add_argument('-m',
                         '--mode',
-                        help='Run mode. Default scrape',
+                        help='Run mode. Default run_bot',
                         choices=[RUN_BOT, SIMULATE, PLAY],
                         default=None,
                         required=True)
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.mode == RUN_BOT:
-        scrape(args.url, args.guess, args.all)
+        run_bot(args.url, args.guess, args.all)
     elif args.mode == SIMULATE:
         simulation(n_solutions=args.n_solutions, 
                     starting_guess=args.guess, 

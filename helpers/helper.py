@@ -52,6 +52,6 @@ def eval_str_to_cmd(eval_str, calculations):
     return cmd[:-1]
 
 
-def load_all_possibilities(filename='all_starting_guesses.txt'):
+def load_all_moves(filename='data/all_starting_guesses.txt'):
     with open(filename, "r") as f:
         return f.read().splitlines()
