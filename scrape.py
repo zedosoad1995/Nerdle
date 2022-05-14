@@ -5,7 +5,6 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
-import argparse
 
 from helper import load_all_possibilities
 from main import get_possible_combinations_from_list, get_suggestion
@@ -97,7 +96,6 @@ def scrape(urls, guess, all):
       urls = [urls]
 
    for url in urls:
-      print(len(possible_combinations))
       driver = open_webpage(url)
       remove_popups(driver)
 

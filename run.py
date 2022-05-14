@@ -3,7 +3,7 @@ from main import play, simulation
 
 from scrape import scrape
 
-SCRAPE = 'scrape'
+RUN_BOT = 'run_bot'
 SIMULATE = 'simulate'
 PLAY = 'play'
 
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('-m',
                         '--mode',
                         help='Run mode. Default scrape',
-                        choices=[SCRAPE, SIMULATE, PLAY],
+                        choices=[RUN_BOT, SIMULATE, PLAY],
                         default=None,
                         required=True)
     parser.add_argument('--url', 
@@ -63,7 +63,7 @@ if __name__ == '__main__':
                         help="Hide live plot of the statistics of the simulation")
     args = parser.parse_args()
 
-    if args.mode == SCRAPE:
+    if args.mode == RUN_BOT:
         scrape(args.url, args.guess, args.all)
     elif args.mode == SIMULATE:
         simulation(n_solutions=args.n_solutions, 
