@@ -40,9 +40,9 @@ To see more about the rules, check this link: https://faqs.nerdlegame.com/
 
 48-32=16.
 
-From all the possible 17,723 starting combinations the combination with the highest entropy was "48-32=16". You can check all the starters ordered by score in [here](data/all_starting_guesses_scores.csv).
+From all the possible 17,723 starting combinations the one with the highest entropy was "48-32=16". You can check all the starters ordered by score in [here](data/all_starting_guesses_scores.csv).
 
-Starting with "48-32=16" and always playing the best suggestions from the algorithm, gives the following results:
+Starting with "48-32=16" and always playing the best suggestions given by the algorithm, gives the following stats:
 
 <p align="center">
 <img src="data/best_start_best_sug.png" alt="Best Start, best suggestions" width="500"/>
@@ -50,7 +50,7 @@ Starting with "48-32=16" and always playing the best suggestions from the algori
 
 An average of 3.077 tries, where 83.423% of the solutions take 3 or less tries to complete. And zero cases with a loss (more than 6 tries).
 
-#### How much does the starter matter?
+#### Impact of the starting guess
 
 Comparing the best starter (48-32=16) with the worst one (86*8=688), and playing randomly, gives the following results:
 
@@ -70,17 +70,20 @@ If the user plays the optimal moves given by the algorithm vs plays it randomly 
 
 Using the algo contributes for an improvement from 3.228 to 3.077 average tries. Or in other words, 83.423% vs 71.185% of the times with a win in 3 or less tries.
 
-The number of wins with 2 tries is almost the same. The biggest diffence appearing with more tries. For 4 tries, random choice will happen 1.6x more often than with the algorithm; 4.1x more times for 5 tries; and 10.3x more times for 6 tries. The algorithm gets exponencially better, the longer the game goes on.
+The number of wins with 2 tries is almost the same. The biggest diffence appears with more tries. 
+
+The number of games with 4 tries happened 1.6x more often when playing randomly vs optimal move; 4.1x more often for 5 tries; and 10.3x more often for 6 tries.
+Using the optimal moves leads to games with a high num. of tries to be rarer and rarer.
 
 #### Just for fun: the worst possible plays
 
-Just for fun, what would be the results for the worst possible plays? This means, the worst starter (86*8=688), combined with the lowest ranked suggestions given by the algorithm.
+What would be the results for the worst possible plays? This means, the worst starter (86*8=688), combined with the lowest ranked suggestions given by the algorithm.
 
 <p align="center">
 <img src="data/worst_start_worst_sug.png" alt="Worst possible play" width="500"/>
 </p>
 
-(Being technically accurate, these are the low 1% suggestions, not the worst. As the simulation with the worst suggestion would take a very long time)
+(Being technically accurate, these are the low 1% suggestions, not the worst. As the simulation with the worst suggestions would take a very long time)
 
 ## Installation
 
