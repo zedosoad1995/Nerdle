@@ -5,6 +5,10 @@
 The Nerdle solver is capable of finding the most optimal plays, averaging 3.077 tries and with a 100% win rate for all 17,723 possible combinations.
 We also found the optimal starting guess: 48-32=16.
 
+<p align="center">
+<img src="media/nerdle_bot.gif" alt="Nerdle bot"  width="500" />
+</p>
+
 Features:
 * Bot that can instantly solve any Nerdle game, live on your browser
 * Supports 3 game types: [Classic](https://nerdlegame.com/), [Instant](https://instant.nerdlegame.com/) and [Speed](https://speed.nerdlegame.com/)
@@ -12,10 +16,6 @@ Features:
 * Ability to simulate for any starting guess, and for different strategies, against all 17,723 combinations
 * An extensive list of [all starting guesses scored](data/all_starting_guesses_scores.csv), from best to worst
 * A study on the statistics of the game and the effects of this solver
-
-<p align="center">
-<img src="media/nerdle_bot.gif" alt="Nerdle bot"  width="500" />
-</p>
 
 The algorithm behind it makes use of Information Theory techniques, which this [video](https://www.youtube.com/watch?v=v68zYyaEmEA) describes in detail how to do it for the [Wordle](https://wordlegame.org/) game.
 
