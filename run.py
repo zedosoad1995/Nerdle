@@ -47,10 +47,10 @@ if __name__ == '__main__':
                         default=None, 
                         help="Number of combinations that will be tested in the simulation." + \
                             "The default None, means that all possibilities (17,723) will be simulated.")
-    parser.add_argument('--fig_name', 
+    parser.add_argument('--fig_path', 
                         type=str, 
-                        default='sim_res', 
-                        help="The name of the figure, which will contain the statistics of the simulations. " + \
+                        default='data/sim_res', 
+                        help="The path of the figure, which will contain the statistics of the simulations. " + \
                             "If the user passes None, then nothing will be saved")
     parser.add_argument('--strategy', 
                         type=str,
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         simulation(n_solutions=args.n_solutions, 
                     starting_guess=args.guess, 
                     sug_possibilities_th=args.suggestions_th, 
-                    fig_name=args.fig_name, 
+                    fig_path=args.fig_path, 
                     strategy=args.strategy,
                     plot_live=not args.hide_plot_live)
     elif args.mode == PLAY:

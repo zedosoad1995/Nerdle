@@ -34,7 +34,7 @@ def plot_simulation(ax, tries_dict, avg_tries, i):
 def simulation(n_solutions=None, 
                 starting_guess='48-32=16', 
                 sug_possibilities_th=100, 
-                fig_name='sim_res',
+                fig_path='sim_res',
                 strategy='best',
                 plot_live=False):
     all_possible_combinations = load_all_moves()

@@ -152,7 +152,7 @@ The 1st line in the image, corresponds to the cmd ```4b 8b -b 3b 2r =r 1r 6r```
 
 #### Simulation
 
-If you want to know how well will an initial guess perform, you must run the following command:
+To know the performance of an initial guess, for all 17,723 solutions:
 
 ```bash
 python3 run.py -m simulate --guess 48-32=16
@@ -160,11 +160,13 @@ python3 run.py -m simulate --guess 48-32=16
 
 And it will show the histogram of the results live, and at the end will save it.
 
-You can also test for different strategies, for example, instead of always simulating the optimal moves, you can do it with random moves (similar to a human):
-
-```bash
-python3 run.py -m simulate --guess 48-32=16 --strategy random
-```
+Options:
+* ```--guess``` - Initial move. The default is 48-32=16.
+*  ```--suggestions_th``` - Max number of possible combinations that the algo will consider in its calculations. The default is 100. If None is passed, then there is no limit. A lower value will make the simulation faster, but potentially slightly less accurate.
+* ```--n_solutions``` - Number of combinations that will be tested in the simulation. The default None, means that all possibilities (17,723) will be simulated.
+* ```--fig_path``` - Path where the figure containing the stats of simulation will be stored.
+* ```--strategy``` - Strategy used to select the next move. Either ```best``` (the default, selects the best suggestion), ```random``` (selects the next move randomly, similar to a human) or ```worst```.
+* ```--hide_plot_live``` - Flag to hide the live plot. This may make the simulation faster.
 
 #### Other
 
